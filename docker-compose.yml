@@ -1,0 +1,27 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - cache
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: url_scraper
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/migration/2024-11-04__init.sql:/docker-entrypoint-initdb.d/2024-11-04__init.sql
+
+  cache:
+    image: memcached:1.6
+    ports:
+      - "11211:11211"

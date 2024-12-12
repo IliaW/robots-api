@@ -1,0 +1,26 @@
+env: "test" # 'test','dev', 'qa', 'prod'
+log_level: "debug"
+log_type: "text" # 'text' or 'json'. Text type has colorized error levels
+service_name: "robots-api"
+port: "8081"
+version: "0.0.1"
+cors_max_age_hours: "24h"
+robots_url_path: "/robots/v1"
+max_body_size: 2 # Max MB size for request body
+
+cache:
+  servers: "cache:11211"
+  ttl_for_robots_txt: "24h"
+
+database:
+  host: "mysql"
+  port: "3306"
+  user: "admin"
+  password: "test"
+  name: "url_scraper"
+  conn_max_lifetime: "10m"
+  max_open_conns: 10
+  max_idle_conns: 10
+
+http_client:
+  request_timeout: "15s" # The maximum time to wait for the response from the server
