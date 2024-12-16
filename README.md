@@ -19,6 +19,12 @@ The base URL for the API call is determined by the `RobotsUrlPath` configuration
 
 ### Custom Rules
 
+Next calls require _**authentication**_.
+Add `X-Api-Key` header to requests.
+The `api-key` can be manually added to the database.
+
+Request to add a key: `INSERT INTO assessor_api_key (api_key, email) VALUES ('new-api-key', 'user@mail.com');`
+
 The base URL for the API calls is determined by the `RobotsUrlPath` configuration setting.
 
 - **GET** `/custom-rule` - Retrieve custom rules for a domain.

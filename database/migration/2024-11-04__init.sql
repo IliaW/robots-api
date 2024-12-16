@@ -26,3 +26,24 @@ CREATE TABLE IF NOT EXISTS custom_rule
     INDEX domain_index (domain)
 ) ENGINE = InnoDB
   CHARSET = utf8;
+
+CREATE TABLE IF NOT EXISTS assessor_api_key
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    api_key    VARCHAR(64)  NOT NULL UNIQUE,
+    email      VARCHAR(100) NOT NULL,
+    is_active  BOOLEAN   DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE = InnoDB
+  CHARSET = utf8;
+
+DELIMITER $$
+CREATE TRIGGER before_insert_assessor_api_key
+    BEFORE INSERT
+    ON assessor_api_key
+    FOR EACH ROW
+BEGIN
+    SET NEW.api_key = SHA2(NEW.api_key, 256);
+END$$
+
+DELIMITER ;

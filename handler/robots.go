@@ -39,6 +39,7 @@ func NewRobotsHandler(cache cacheClient.CachedClient, ruleRepo persistence.RuleS
 // @Success 200 {string} true "true or false depending on whether scraping is allowed"
 // @Failure 400 {string} string "Bad request, missing 'url' or 'user_agent'"
 // @Failure 500 {string} string "Internal server error"
+// @Security ApiKeyAuth
 // @Router /scrape-allowed [get]
 func (h *RobotsHandler) GetAllowedScrape(c *gin.Context) {
 	url := c.Query("url")
@@ -84,6 +85,7 @@ func (h *RobotsHandler) GetAllowedScrape(c *gin.Context) {
 // @Success 200 {object} model.Rule "Custom rule object"
 // @Failure 400 {object} error "Bad request. Either 'id' or 'url' must be provided"
 // @Failure 500 {object} error "Internal server error"
+// @Security ApiKeyAuth
 // @Router /custom-rule [get]
 func (h *RobotsHandler) GetCustomRule(c *gin.Context) {
 	id := c.Query("id")
@@ -125,6 +127,7 @@ func (h *RobotsHandler) GetCustomRule(c *gin.Context) {
 // @Success 200 {object} string "Custom rule created successfully"
 // @Failure 400 {object} error "Bad request, missing 'url' or empty file"
 // @Failure 500 {object} error "Internal server error"
+// @Security ApiKeyAuth
 // @Router /custom-rule [post]
 func (h *RobotsHandler) CreateCustomRule(c *gin.Context) {
 	url := c.Query("url")
@@ -175,6 +178,7 @@ func (h *RobotsHandler) CreateCustomRule(c *gin.Context) {
 // @Failure 400 {object} error "Bad request, missing 'id' or invalid data to update"
 // @Failure 404 {object} error "Rule not found"
 // @Failure 500 {object} error "Internal server error"
+// @Security ApiKeyAuth
 // @Router /custom-rule [put]
 func (h *RobotsHandler) UpdateCustomRule(c *gin.Context) {
 	id := c.Query("id")
@@ -227,6 +231,7 @@ func (h *RobotsHandler) UpdateCustomRule(c *gin.Context) {
 // @Success 200 {object} error "Rule deleted successfully"
 // @Failure 400 {object} error "Bad request, missing 'id'"
 // @Failure 500 {object} error "Internal server error"
+// @Security ApiKeyAuth
 // @Router /custom-rule [delete]
 func (h *RobotsHandler) DeleteCustomRule(c *gin.Context) {
 	id := c.Query("id")

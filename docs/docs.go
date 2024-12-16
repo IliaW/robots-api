@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/custom-rule": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Retrieve a custom rule based on the provided query parameter 'id' or 'url'",
                 "produces": [
                     "application/json"
@@ -57,6 +62,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update an existing custom rule based on the provided ID.",
                 "consumes": [
                     "text/plain"
@@ -115,6 +125,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new custom rule by providing a URL and the corresponding rule file",
                 "consumes": [
                     "text/plain"
@@ -162,6 +177,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete an existing custom rule based on the provided ID.",
                 "produces": [
                     "application/json"
@@ -197,6 +217,11 @@ const docTemplate = `{
         },
         "/scrape-allowed": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Check if the given user agent is allowed to scrape the specified URL based on the robots.txt rules",
                 "produces": [
                     "text/plain"
@@ -265,6 +290,13 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "X-API-Key",
+            "in": "header"
         }
     }
 }`

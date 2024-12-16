@@ -14,46 +14,48 @@ definitions:
         type: string
     type: object
 info:
-  contact: { }
+  contact: {}
 paths:
   /custom-rule:
     delete:
       description: Delete an existing custom rule based on the provided ID.
       parameters:
-        - description: Custom rule ID
-          in: query
-          name: id
-          required: true
-          type: string
+      - description: Custom rule ID
+        in: query
+        name: id
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: Rule deleted successfully
-          schema: { }
+          schema: {}
         "400":
           description: Bad request, missing 'id'
-          schema: { }
+          schema: {}
         "500":
           description: Internal server error
-          schema: { }
+          schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Delete a custom rule by ID
       tags:
-        - Custom Rule
+      - Custom Rule
     get:
       description: Retrieve a custom rule based on the provided query parameter 'id'
         or 'url'
       parameters:
-        - description: Custom rule ID
-          in: query
-          name: id
-          type: string
-        - description: Custom rule URL
-          in: query
-          name: url
-          type: string
+      - description: Custom rule ID
+        in: query
+        name: id
+        type: string
+      - description: Custom rule URL
+        in: query
+        name: url
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: Custom rule object
@@ -61,32 +63,34 @@ paths:
             $ref: '#/definitions/model.Rule'
         "400":
           description: Bad request. Either 'id' or 'url' must be provided
-          schema: { }
+          schema: {}
         "500":
           description: Internal server error
-          schema: { }
+          schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Get custom rule by ID or URL
       tags:
-        - Custom Rule
+      - Custom Rule
     post:
       consumes:
-        - text/plain
+      - text/plain
       description: Create a new custom rule by providing a URL and the corresponding
         rule file
       parameters:
-        - description: URL for the custom rule
-          in: query
-          name: url
-          required: true
+      - description: URL for the custom rule
+        in: query
+        name: url
+        required: true
+        type: string
+      - description: Custom rule file content
+        in: body
+        name: file
+        required: true
+        schema:
           type: string
-        - description: Custom rule file content
-          in: body
-          name: file
-          required: true
-          schema:
-            type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: Custom rule created successfully
@@ -94,36 +98,38 @@ paths:
             type: string
         "400":
           description: Bad request, missing 'url' or empty file
-          schema: { }
+          schema: {}
         "500":
           description: Internal server error
-          schema: { }
+          schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Create a custom rule
       tags:
-        - Custom Rule
+      - Custom Rule
     put:
       consumes:
-        - text/plain
+      - text/plain
       description: Update an existing custom rule based on the provided ID.
       parameters:
-        - description: Custom rule ID
-          in: query
-          name: id
-          required: true
+      - description: Custom rule ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: New URL for the custom rule
+        in: query
+        name: url
+        required: true
+        type: string
+      - description: Updated custom rule file content
+        in: body
+        name: file
+        required: true
+        schema:
           type: string
-        - description: New URL for the custom rule
-          in: query
-          name: url
-          required: true
-          type: string
-        - description: Updated custom rule file content
-          in: body
-          name: file
-          required: true
-          schema:
-            type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: Updated custom rule
@@ -131,33 +137,35 @@ paths:
             $ref: '#/definitions/model.Rule'
         "400":
           description: Bad request, missing 'id' or invalid data to update
-          schema: { }
+          schema: {}
         "404":
           description: Rule not found
-          schema: { }
+          schema: {}
         "500":
           description: Internal server error
-          schema: { }
+          schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Update a custom rule by ID
       tags:
-        - Custom Rule
+      - Custom Rule
   /scrape-allowed:
     get:
       description: Check if the given user agent is allowed to scrape the specified
         URL based on the robots.txt rules
       parameters:
-        - description: URL to check
-          in: query
-          name: url
-          required: true
-          type: string
-        - description: User agent to check
-          in: query
-          name: user_agent
-          required: true
-          type: string
+      - description: URL to check
+        in: query
+        name: url
+        required: true
+        type: string
+      - description: User agent to check
+        in: query
+        name: user_agent
+        required: true
+        type: string
       produces:
-        - text/plain
+      - text/plain
       responses:
         "200":
           description: true or false depending on whether scraping is allowed
@@ -171,7 +179,14 @@ paths:
           description: Internal server error
           schema:
             type: string
+      security:
+      - ApiKeyAuth: []
       summary: Check if scraping is allowed for a specific user agent and URL
       tags:
-        - Scraping
+      - Scraping
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: X-API-Key
+    type: apiKey
 swagger: "2.0"

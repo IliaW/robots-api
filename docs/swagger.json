@@ -1,259 +1,291 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "contact": {}
-  },
-  "paths": {
-    "/custom-rule": {
-      "get": {
-        "description": "Retrieve a custom rule based on the provided query parameter 'id' or 'url'",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Custom Rule"
-        ],
-        "summary": "Get custom rule by ID or URL",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Custom rule ID",
-            "name": "id",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Custom rule URL",
-            "name": "url",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Custom rule object",
-            "schema": {
-              "$ref": "#/definitions/model.Rule"
-            }
-          },
-          "400": {
-            "description": "Bad request. Either 'id' or 'url' must be provided",
-            "schema": {}
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {}
-          }
-        }
-      },
-      "put": {
-        "description": "Update an existing custom rule based on the provided ID.",
-        "consumes": [
-          "text/plain"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Custom Rule"
-        ],
-        "summary": "Update a custom rule by ID",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Custom rule ID",
-            "name": "id",
-            "in": "query",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "New URL for the custom rule",
-            "name": "url",
-            "in": "query",
-            "required": true
-          },
-          {
-            "description": "Updated custom rule file content",
-            "name": "file",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Updated custom rule",
-            "schema": {
-              "$ref": "#/definitions/model.Rule"
-            }
-          },
-          "400": {
-            "description": "Bad request, missing 'id' or invalid data to update",
-            "schema": {}
-          },
-          "404": {
-            "description": "Rule not found",
-            "schema": {}
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {}
-          }
-        }
-      },
-      "post": {
-        "description": "Create a new custom rule by providing a URL and the corresponding rule file",
-        "consumes": [
-          "text/plain"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Custom Rule"
-        ],
-        "summary": "Create a custom rule",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "URL for the custom rule",
-            "name": "url",
-            "in": "query",
-            "required": true
-          },
-          {
-            "description": "Custom rule file content",
-            "name": "file",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Custom rule created successfully",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "400": {
-            "description": "Bad request, missing 'url' or empty file",
-            "schema": {}
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {}
-          }
-        }
-      },
-      "delete": {
-        "description": "Delete an existing custom rule based on the provided ID.",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Custom Rule"
-        ],
-        "summary": "Delete a custom rule by ID",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Custom rule ID",
-            "name": "id",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Rule deleted successfully",
-            "schema": {}
-          },
-          "400": {
-            "description": "Bad request, missing 'id'",
-            "schema": {}
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {}
-          }
-        }
-      }
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
     },
-    "/scrape-allowed": {
-      "get": {
-        "description": "Check if the given user agent is allowed to scrape the specified URL based on the robots.txt rules",
-        "produces": [
-          "text/plain"
-        ],
-        "tags": [
-          "Scraping"
-        ],
-        "summary": "Check if scraping is allowed for a specific user agent and URL",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "URL to check",
-            "name": "url",
-            "in": "query",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "User agent to check",
-            "name": "user_agent",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "true or false depending on whether scraping is allowed",
-            "schema": {
-              "type": "string"
+    "paths": {
+        "/custom-rule": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a custom rule based on the provided query parameter 'id' or 'url'",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Custom Rule"
+                ],
+                "summary": "Get custom rule by ID or URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Custom rule ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Custom rule URL",
+                        "name": "url",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Custom rule object",
+                        "schema": {
+                            "$ref": "#/definitions/model.Rule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request. Either 'id' or 'url' must be provided",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing custom rule based on the provided ID.",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Custom Rule"
+                ],
+                "summary": "Update a custom rule by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Custom rule ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "New URL for the custom rule",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated custom rule file content",
+                        "name": "file",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated custom rule",
+                        "schema": {
+                            "$ref": "#/definitions/model.Rule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, missing 'id' or invalid data to update",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Rule not found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new custom rule by providing a URL and the corresponding rule file",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Custom Rule"
+                ],
+                "summary": "Create a custom rule",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL for the custom rule",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Custom rule file content",
+                        "name": "file",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Custom rule created successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, missing 'url' or empty file",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete an existing custom rule based on the provided ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Custom Rule"
+                ],
+                "summary": "Delete a custom rule by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Custom rule ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rule deleted successfully",
+                        "schema": {}
+                    },
+                    "400": {
+                        "description": "Bad request, missing 'id'",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {}
+                    }
+                }
             }
-          },
-          "400": {
-            "description": "Bad request, missing 'url' or 'user_agent'",
-            "schema": {
-              "type": "string"
+        },
+        "/scrape-allowed": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Check if the given user agent is allowed to scrape the specified URL based on the robots.txt rules",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Scraping"
+                ],
+                "summary": "Check if scraping is allowed for a specific user agent and URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User agent to check",
+                        "name": "user_agent",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "true or false depending on whether scraping is allowed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, missing 'url' or 'user_agent'",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "type": "string"
-            }
-          }
         }
-      }
-    }
-  },
-  "definitions": {
-    "model.Rule": {
-      "description": "Represents a custom rule for a domain",
-      "type": "object",
-      "properties": {
-        "created_at": {
-          "type": "string"
-        },
-        "domain": {
-          "type": "string"
-        },
-        "id": {
-          "type": "integer"
-        },
-        "robots_txt": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string"
+    },
+    "definitions": {
+        "model.Rule": {
+            "description": "Represents a custom rule for a domain",
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "robots_txt": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
         }
-      }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "X-API-Key",
+            "in": "header"
+        }
     }
-  }
 }

@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -35,6 +38,9 @@ var (
 	httpClient *http.Client
 )
 
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name X-API-Key
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -74,12 +80,16 @@ func httpServer() *gin.Engine {
 	})
 
 	robotsHandler := handler.NewRobotsHandler(cache, ruleRepo, httpClient)
-	robots := r.Group(cfg.RobotsUrlPath)
-	robots.GET("/scrape-allowed", robotsHandler.GetAllowedScrape)
-	robots.GET("/custom-rule", robotsHandler.GetCustomRule)
-	robots.POST("/custom-rule", robotsHandler.CreateCustomRule)
-	robots.PUT("/custom-rule", robotsHandler.UpdateCustomRule)
-	robots.DELETE("/custom-rule", robotsHandler.DeleteCustomRule)
+
+	scrapeAllowed := r.Group(cfg.RobotsUrlPath)
+	scrapeAllowed.GET("/scrape-allowed", robotsHandler.GetAllowedScrape)
+
+	customRule := r.Group(cfg.RobotsUrlPath)
+	customRule.Use(apiKeyCheck())
+	customRule.GET("/custom-rule", robotsHandler.GetCustomRule)
+	customRule.POST("/custom-rule", robotsHandler.CreateCustomRule)
+	customRule.PUT("/custom-rule", robotsHandler.UpdateCustomRule)
+	customRule.DELETE("/custom-rule", robotsHandler.DeleteCustomRule)
 
 	docs.SwaggerInfo.Title = fmt.Sprintf("Robots.txt API (%s)", cfg.ServiceName)
 	docs.SwaggerInfo.Description = "This is a simple API to control scrape permissions and create custom rules for specific domains."
@@ -114,6 +124,47 @@ func limitBodySize() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, cfg.MaxBodySize*1024*1024)
 	}
+}
+
+func apiKeyCheck() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apiKey := c.GetHeader("X-API-Key")
+		if apiKey == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "X-API-Key header is missing"})
+			c.Abort()
+			return
+		}
+
+		apiKeyHash := hashAPIKey(apiKey)
+		var isActive bool
+
+		err := db.QueryRow("SELECT is_active FROM assessor_api_key WHERE api_key = ?", apiKeyHash).
+			Scan(&isActive)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid api-key"})
+				c.Abort()
+				return
+			}
+			log.Error("failed to query api key", slog.String("err", err.Error()))
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "api-key check failed"})
+			c.Abort()
+			return
+		}
+
+		if !isActive {
+			c.JSON(http.StatusForbidden, gin.H{"error": "api-key is not active"})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}
+
+func hashAPIKey(apiKey string) string {
+	hash := sha256.Sum256([]byte(apiKey))
+	return hex.EncodeToString(hash[:])
 }
 
 func setupLogger() *slog.Logger {
