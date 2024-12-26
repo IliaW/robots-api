@@ -19,6 +19,7 @@ type Config struct {
 	CorsMaxAgeHours    time.Duration     `mapstructure:"cors_max_age_hours"`
 	RobotsUrlPath      string            `mapstructure:"robots_url_path"`
 	MaxBodySize        int64             `mapstructure:"max_body_size"`
+	PprofEnabled       bool              `mapstructure:"pprof_enabled"`
 	CacheSettings      *CacheConfig      `mapstructure:"cache"`
 	DbSettings         *DatabaseConfig   `mapstructure:"database"`
 	HttpClientSettings *HttpClientConfig `mapstructure:"http_client"`

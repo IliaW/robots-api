@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -22,9 +23,11 @@ import (
 	cacheClient "github.com/IliaW/robots-api/internal/cache"
 	"github.com/IliaW/robots-api/internal/persistence"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/lmittmann/tint"
+	stats "github.com/semihalev/gin-stats"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -55,16 +58,28 @@ func main() {
 	httpClient = setupHttpClient()
 	log.Info("starting application on port "+cfg.Port, slog.String("env", cfg.Env))
 
+	port := fmt.Sprintf(":%v", cfg.Port)
+	srv := &http.Server{
+		Addr:    port,
+		Handler: httpServer().Handler(),
+	}
+
 	go func() {
-		port := fmt.Sprintf(":%v", cfg.Port)
-		if err := httpServer().Run(port); err != nil {
-			slog.Error("can't start server", slog.Any("err", err))
+		if err := srv.ListenAndServe(); err != nil {
+			log.Error("listen:", slog.Any("err", err))
 			os.Exit(1)
 		}
 	}()
 
 	<-ctx.Done()
 	log.Info("stopping server...")
+	ctxT, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := srv.Shutdown(ctxT)
+	if errors.Is(err, context.DeadlineExceeded) {
+		log.Error("shutdown timeout exceeded")
+	}
+	log.Info("server stopped.")
 }
 
 func httpServer() *gin.Engine {
@@ -74,10 +89,13 @@ func httpServer() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(setCORS())
 	r.Use(limitBodySize())
-	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/ping"}}))
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
+	r.Use(stats.RequestStats())
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/ping", "/pprof", "/swagger", "/stats"}}))
+	r.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
+	r.GET("/stats", func(c *gin.Context) { c.JSON(http.StatusOK, stats.Report()) })
+	if cfg.PprofEnabled {
+		pprof.Register(r, "/pprof")
+	}
 
 	robotsHandler := handler.NewRobotsHandler(cache, ruleRepo, httpClient)
 

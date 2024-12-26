@@ -7,6 +7,7 @@ version: "0.0.1"
 cors_max_age_hours: "24h"
 robots_url_path: "/robots/v1"
 max_body_size: 2 # Max MB size for request body
+pprof_enabled: true
 
 cache:
   servers: "cache:11211"
